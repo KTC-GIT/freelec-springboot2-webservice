@@ -26,24 +26,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      # [추가] 디버깅을 위해 파일 상태 확인
-      - name: Check file details
-        run: |
-          echo "--- File list ---"
-          ls -la
-          echo "--- 'file' command output for gradlew ---"
-          file ./gradlew
-          echo "--- First line of gradlew (showing control chars) ---"
-          cat -v ./gradlew | head -n 1
-
-      # [추가] dos2unix 설치
-      - name: Install dos2unix
-        run: sudo apt-get update && sudo apt-get install -y dos2unix
-
-      # [수정] sed 대신 dos2unix로 줄바꿈 문자 변환
-      - name: Fix line endings with dos2unix
-        run: dos2unix ./gradlew
-
       # (3) gradlew 파일에 실행 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
