@@ -8,6 +8,17 @@ on:
   pull_request:
     branches: [ "main", "master" ]
 
+# OIDC 사용을 위해 id-token 권한 필수
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_NAME: simple-springboot3-webservice
+  CODE_DEPLOY_APP_NAME: simple-springboot3-webservice
+  CODE_DEPLOY_GROUP_NAME: my-spring-group-deploy
+
 # 실행할 작업
 jobs:
   build:
