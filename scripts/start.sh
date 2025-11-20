@@ -1,37 +1,33 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-#1. 배포된 파일이 위치한 디렉토리(appspec.yml의 destination과 일치)
-ROOT_PATH="/home/ec2-user/app/step2/zip"
-JAR_DIR="/home/ec2-user/app/step2/zip/build/libs"
+ABSPATH-$(readlink -f $0)
+ABSDIR=$(dirname $ABSPATH)
+source ${ABSDIR}/profile.sh
 
-cd $ROOT_PATH
+REPOSITORY=/home/ec2-user/app/step3
+PROJECT_NAME=freelec-springboot2-webservice
 
-echo ">현재 구동 중인 애플리케이션 pid 확인"
-CURRENT_PID=$(pgrep -f simple-springboot3-webservice) # 프로젝트 이름 혹은 jar 이름 일부
+echo "> Build 파일 복사"
+echo "> cp $REPOSITORY/zip/*.jar $REPOSITORY/"
 
-if [ -z "$CURRENT_PID" ]; then
-  echo "> 현재 구동 중인 애플리케이션이 없으므로 종료하지 않습니다."
-else
-  echo "> kill -15 $CURRENT_PID"
-  kill -15 $CURRENT_PID
-  sleep 5
-fi
+cp $REPOSITORY/zip/*.jar $REPOSITORY/
 
 echo "> 새 애플리케이션 배포"
+JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
 
-#jar 파일 찾기 (plain jar 제외)
-JAR_NAME=$(ls $JAR_DIR/*.jar | grep -v 'plain')
-
-echo "> JAR Name: $JAR_NAME"
-
+echo "> JAR_NAME: $JAR_NAME"
 echo "> $JAR_NAME 에 실행권한 추가"
+
 chmod +x $JAR_NAME
 
 echo "> $JAR_NAME 실행"
 
-#nohup으로 백그라운드 실행 & 로그남기기
+IDLE_PROFILE=$(find_idle_profile)
+
+echo "> $JAR_NAME 를 profile=$IDLE_PROFILE 로 실행합니다."
+
 nohup java -jar \
-  -Xms512m -Xmx512m \
-  -Dspring.config.location=file:/home/ec2-user/app/application-oauth.properties,file:/home/ec2-user/app/application-real-db.properties \
-  -Dspring.profiles.active=oauth,real-db \
-  $JAR_NAME > $ROOT_PATH/nohup.out 2>&1 &
+    -Xms512m -Xmx512m \
+    -Dspring.config.location=classpath:/application.properties,classpath:/application-$IDLE_PROFILE.properties,/home/ec2-user/app/application-oauth.properties,/home/ec2-user/app/application-real-db.properties \
+    -Dspring.profiles.active=$IDLE_PROFILE \
+    $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
