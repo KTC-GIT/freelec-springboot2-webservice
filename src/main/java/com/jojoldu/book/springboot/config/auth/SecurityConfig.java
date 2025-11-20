@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(options -> options.disable()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/","/css/**","/images/**","/js/**","/h2-console/**","/error","/favicon.ico").permitAll()
+                        .requestMatchers("/","/css/**","/images/**","/js/**","/h2-console/**","/error","/favicon.ico","/profile").permitAll()
                         .requestMatchers("/api/v1/**").hasRole(Role.USER.name())
                         .anyRequest().authenticated())
                 .logout(logout -> logout.logoutSuccessUrl("/"))

@@ -31,7 +31,7 @@ echo "> $JAR_NAME 실행"
 
 #nohup으로 백그라운드 실행 & 로그남기기
 nohup java -jar \
-  -Xms512m -XmX512m \
+  -Xms512m -Xmx512m \
   -Dspring.config.location=file:/home/ec2-user/app/application-oauth.properties,file:/home/ec2-user/app/application-real-db.properties \
   -Dspring.profiles.active=oauth,real-db \
   $JAR_NAME > $ROOT_PATH/nohup.out 2>&1 &
